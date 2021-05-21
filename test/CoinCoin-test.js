@@ -1,4 +1,5 @@
 const { expect } = require('chai')
+const { ethers } = require('hardhat')
 
 describe('CoinCoin Token', function () {
   let CoinCoin, coincoin, dev, owner, alice, bob, charlie, dan, eve
@@ -10,7 +11,7 @@ describe('CoinCoin Token', function () {
     ;[dev, owner, alice, bob, charlie, dan, eve] = await ethers.getSigners()
     CoinCoin = await ethers.getContractFactory('CoinCoin')
     coincoin = await CoinCoin.connect(dev).deploy(owner.address, INITIAL_SUPPLY)
-    await coincoin.deployed()
+    // await coincoin.deployed()
     /*
     Il faudra transférer des tokens à nos utilisateurs de tests lorsque la fonction transfer sera implementé
     await coincoin
@@ -34,16 +35,18 @@ describe('CoinCoin Token', function () {
       expect(await coincoin.balanceOf(owner.address)).to.equal(INITIAL_SUPPLY)
     })
 
-    it('emits event Transfer when mint totalSupply', async function () {
+    it('emits event Transfer when mint initial supply to owner at deployement', async function () {
       /*
-      Pb de récupération de l'event d'une transaction passée avec Waffle: Sofiane s'en occupe
-      await expect(
-        CoinCoin.connect(dev).deploy(
-          owner.address,
-          ethers.utils.parseEther('8000000000')
-        )
-      ).to.emit(, 'Transfer').withArgs(ethers.constants.AddressZero, owner.address, ethers.utils.parseEther('8000000000'));
+        On peut tester si un event a été emit depuis une transaction particulière.
+        Le problème c'est qu'une transaction de déploiement ne nous retourne pas la transaction
+        mais l'instance du smart contract déployé.
+        Pour récupérer la transaction qui déployé le smart contract il faut utilisé un l'attribut
+        ".deployTransaction" sur l'instance du smart contract
       */
+      let tx = await coincoin.deployTransaction
+      await expect(tx)
+        .to.emit(coincoin, 'Transfer')
+        .withArgs(ethers.constants.AddressZero, owner.address, INITIAL_SUPPLY)
     })
   })
 

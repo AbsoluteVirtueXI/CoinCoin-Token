@@ -9,7 +9,7 @@ contract CoinCoin {
   uint256 private _totalSupply;
 
   event Transfer(address indexed sender, address indexed receipient, uint256 amount);
-
+  
   constructor(address owner_, uint256 totalSupply_) {
     _name = "CoinCoin";
     _symbol = "COIN";
