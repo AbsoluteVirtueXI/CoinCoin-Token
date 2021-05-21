@@ -11,7 +11,7 @@ describe('CoinCoin Token', function () {
     ;[dev, owner, alice, bob, charlie, dan, eve] = await ethers.getSigners()
     CoinCoin = await ethers.getContractFactory('CoinCoin')
     coincoin = await CoinCoin.connect(dev).deploy(owner.address, INITIAL_SUPPLY)
-    // await coincoin.deployed()
+    await coincoin.deployed()
     /*
     Il faudra transférer des tokens à nos utilisateurs de tests lorsque la fonction transfer sera implementé
     await coincoin
@@ -43,8 +43,9 @@ describe('CoinCoin Token', function () {
         Pour récupérer la transaction qui déployé le smart contract il faut utilisé un l'attribut
         ".deployTransaction" sur l'instance du smart contract
       */
-      let tx = await coincoin.deployTransaction
-      await expect(tx)
+      let receipt = await coincoin.deployTransaction.wait()
+      let txHash = receipt.transactionHash
+      await expect(txHash)
         .to.emit(coincoin, 'Transfer')
         .withArgs(ethers.constants.AddressZero, owner.address, INITIAL_SUPPLY)
     })
